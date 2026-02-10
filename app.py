@@ -3,6 +3,10 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from auth_blueprint import authentication_blueprint
 from appointments_blueprint import appointments_blueprint
+from pregnancy_profile_blueprint import pregnancy_profile_blueprint
+...
+app.register_blueprint(pregnancy_profile_blueprint)
+
 
 load_dotenv()
 

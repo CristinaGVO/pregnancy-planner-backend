@@ -16,4 +16,4 @@ app.register_blueprint(appointments_blueprint)
 def index():
     return "Pregnancy Planner API"
 
-app.run(debug=True, port=5000)
+app.run(debug=True, port=5001)

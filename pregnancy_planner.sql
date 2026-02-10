@@ -15,3 +15,11 @@ CREATE TABLE IF NOT EXISTS appointments (
   location VARCHAR(120),
   notes VARCHAR(1000)
 );
+
+--profile--
+CREATE TABLE IF NOT EXISTS pregnancy_profiles (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER UNIQUE NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  due_date DATE NOT NULL,
+  baby_nickname VARCHAR(50)
+);

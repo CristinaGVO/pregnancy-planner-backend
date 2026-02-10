@@ -14,7 +14,7 @@ def create_appointment():
 
         user_id = g.user["id"]
         title = data["title"]
-        date_time = data["date_time"]  # manda: "YYYY-MM-DD HH:MM:SS"
+        date_time = data["date_time"]  #fechas
         location = data.get("location")
         notes = data.get("notes")
 

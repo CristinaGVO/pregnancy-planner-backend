@@ -26,7 +26,7 @@ def sign_up():
         hashed_password = bcrypt.hashpw(
             bytes(new_user_data["password"], 'utf-8'), bcrypt.gensalt())
         cursor.execute("INSERT INTO users (username, password) VALUES (%s, %s) RETURNING id, username",
-                       (new_user_data["username"], hashed_password.decode('utf-8')))
+                    (new_user_data["username"], hashed_password.decode('utf-8')))
         created_user = cursor.fetchone()
         connection.commit()
         connection.close()

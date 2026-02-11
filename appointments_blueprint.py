@@ -1,11 +1,13 @@
 from flask import Blueprint, jsonify, request, g
 import psycopg2.extras
+
 from db_helpers import get_db_connection
 from auth_middleware import token_required
 
 appointments_blueprint = Blueprint("appointments_blueprint", __name__)
 
 
+# CREATE
 @appointments_blueprint.route("/appointments", methods=["POST"])
 @token_required
 def create_appointment():
@@ -13,8 +15,12 @@ def create_appointment():
         data = request.get_json()
 
         user_id = g.user["id"]
+
         title = data["title"]
-        date_time = data["date_time"]  #fechas
+        date_time = data["date_time"]  # "YYYY-MM-DD HH:MM:SS"
+
+        doctor_name = data.get("doctor_name")
+        appointment_type = data.get("appointment_type")
         location = data.get("location")
         notes = data.get("notes")
 
@@ -23,11 +29,11 @@ def create_appointment():
 
         cursor.execute(
             """
-            INSERT INTO appointments (user_id, title, date_time, location, notes)
-            VALUES (%s, %s, %s, %s, %s)
+            INSERT INTO appointments (user_id, title, date_time, doctor_name, appointment_type, location, notes)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
             RETURNING *;
             """,
-            (user_id, title, date_time, location, notes),
+            (user_id, title, date_time, doctor_name, appointment_type, location, notes),
         )
 
         created_appointment = cursor.fetchone()
@@ -41,6 +47,7 @@ def create_appointment():
         return jsonify({"error": str(error)}), 500
 
 
+# INDEX (solo las citas del user)
 @appointments_blueprint.route("/appointments", methods=["GET"])
 @token_required
 def appointments_index():
@@ -68,6 +75,7 @@ def appointments_index():
         return jsonify({"error": str(error)}), 500
 
 
+# SHOW (ownership check)
 @appointments_blueprint.route("/appointments/<appointment_id>", methods=["GET"])
 @token_required
 def show_appointment(appointment_id):
@@ -83,7 +91,6 @@ def show_appointment(appointment_id):
             connection.close()
             return jsonify({"error": "Appointment not found"}), 404
 
-        # ownership check
         if appointment["user_id"] != g.user["id"]:
             cursor.close()
             connection.close()
@@ -91,12 +98,14 @@ def show_appointment(appointment_id):
 
         cursor.close()
         connection.close()
+
         return jsonify(appointment), 200
 
     except Exception as error:
         return jsonify({"error": str(error)}), 500
 
 
+# UPDATE (ownership check)
 @appointments_blueprint.route("/appointments/<appointment_id>", methods=["PUT"])
 @token_required
 def update_appointment(appointment_id):
@@ -124,6 +133,8 @@ def update_appointment(appointment_id):
             UPDATE appointments
             SET title = %s,
                 date_time = %s,
+                doctor_name = %s,
+                appointment_type = %s,
                 location = %s,
                 notes = %s
             WHERE id = %s
@@ -132,6 +143,8 @@ def update_appointment(appointment_id):
             (
                 data["title"],
                 data["date_time"],
+                data.get("doctor_name"),
+                data.get("appointment_type"),
                 data.get("location"),
                 data.get("notes"),
                 appointment_id,
@@ -149,6 +162,7 @@ def update_appointment(appointment_id):
         return jsonify({"error": str(error)}), 500
 
 
+# DELETE (ownership check)
 @appointments_blueprint.route("/appointments/<appointment_id>", methods=["DELETE"])
 @token_required
 def delete_appointment(appointment_id):

@@ -12,6 +12,8 @@ CREATE TABLE IF NOT EXISTS appointments (
   user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   title VARCHAR(120) NOT NULL,
   date_time TIMESTAMP NOT NULL,
+  doctor_name VARCHAR (120) NOT NULL,
+ 
   location VARCHAR(120),
   notes VARCHAR(1000)
 );

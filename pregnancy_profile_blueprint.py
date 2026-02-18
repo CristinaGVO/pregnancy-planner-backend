@@ -21,7 +21,7 @@ def get_profile():
         )
         profile = cursor.fetchone()
 
-        # ✅ si no existe, NO es error: devolvemos null
+       
         if profile is None:
             return jsonify(None), 200
 

@@ -13,7 +13,8 @@ CREATE TABLE IF NOT EXISTS appointments (
   title VARCHAR(120) NOT NULL,
   date_time TIMESTAMP NOT NULL,
   doctor_name VARCHAR (120) NOT NULL,
- 
+  appointment_type VARCHAR (50),
+  status VARCHAR (20) NOT NULL,
   location VARCHAR(120),
   notes VARCHAR(1000)
 );
